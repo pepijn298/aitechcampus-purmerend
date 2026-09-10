@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useSession, signIn } from 'next-auth/react'
 
 export default function ChatWidget() {
   const [messages, setMessages] = useState([{ role: 'system', content: 'Je bent een campus-assistent.' }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const { data: session } = useSession()
 
   async function send() {
     if (!input) return
@@ -36,6 +38,16 @@ export default function ChatWidget() {
       <div style={{ marginTop: 8 }}>
         <input value={input} onChange={e => setInput(e.target.value)} style={{ width: '80%' }} />
         <button onClick={send} disabled={loading} style={{ marginLeft: 8 }}>{loading ? '...' : 'Send'}</button>
+      </div>
+      <div style={{ marginTop: 8 }}>
+        {session ? (
+          <div>Signed in as {session.user.email}</div>
+        ) : (
+          <div>
+            <button onClick={() => signIn()}>Sign in</button>
+            <small style={{ display: 'block', marginTop: 8 }}>Sign in with Google to allow calendar integration.</small>
+          </div>
+        )}
       </div>
     </div>
   )
